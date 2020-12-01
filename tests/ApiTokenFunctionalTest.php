@@ -38,4 +38,22 @@ class ApiTokenFunctionalTest extends WebTestCase
             'roles' => ['ROLE_USER'],
         ], $data);
     }
+
+    public function testApiToken401OnInvalidToken()
+    {
+        $client = self::createClient();
+        // X-TOKEN is the header name
+        $client->request('GET', '/secure', [], [], [
+            'HTTP_X-TOKEN' => 'wrong-token',
+            'HTTP_ACCEPT' => 'application/json'
+        ]);
+        $this->assertResponseStatusCodeSame(401);
+
+        $content = $client->getResponse()->getContent();
+        $this->assertJson($content);
+        $data = json_decode($content, true);
+        $this->assertEquals([
+            'error' => 'Invalid credentials.',
+        ], $data);
+    }
 }

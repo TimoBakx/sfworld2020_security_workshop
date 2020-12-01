@@ -69,6 +69,6 @@ final class ApiTokenAuthenticator implements AuthenticatorInterface
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new JsonResponse(['error' => $exception->getMessageKey()], 403);
+        return new JsonResponse(['error' => $exception->getMessageKey()], 401);
     }
 }
