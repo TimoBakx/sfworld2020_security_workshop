@@ -77,6 +77,6 @@ final class LoginFormAuthenticator implements AuthenticatorInterface
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return null;
+        return new RedirectResponse($this->router->generate('app_login'));
     }
 }
