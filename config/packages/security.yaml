@@ -25,6 +25,8 @@ security:
             entry_point: App\Security\LoginFormAuthenticator
             remember_me:
                 secret: '%kernel.secret%'
+            login_throttling:
+                max_attempts: 3
             logout:
                 path: app_logout
 

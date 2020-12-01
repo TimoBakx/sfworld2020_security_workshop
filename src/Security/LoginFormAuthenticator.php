@@ -55,6 +55,8 @@ final class LoginFormAuthenticator implements AuthenticatorInterface, Authentica
         $password = $request->request->get('password');
         $csrfToken = $request->request->get('_csrf_token');
 
+        $request->getSession()->set(Security::LAST_USERNAME, $email);
+
         return new Passport(
             new UserBadge($email, $this->loader),
             new PasswordCredentials($password),
