@@ -22,6 +22,7 @@ security:
 #            http_basic: true
             custom_authenticators:
                 - App\Security\LoginFormAuthenticator
+                - App\Security\ApiTokenAuthenticator
             entry_point: App\Security\LoginFormAuthenticator
             remember_me:
                 secret: '%kernel.secret%'
