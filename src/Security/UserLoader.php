@@ -19,7 +19,7 @@ final class UserLoader
         $this->repository = $repository;
     }
 
-    public function __invoke(string $email): User
+    public function __invoke(string $email): ?User
     {
         return $this->repository->findOneBy(['email' => $email]);
     }
