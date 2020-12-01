@@ -13,6 +13,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\UserPassportInterface;
+use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 
 final class LoginFormAuthenticator implements AuthenticatorInterface
 {
@@ -45,7 +47,19 @@ final class LoginFormAuthenticator implements AuthenticatorInterface
 
     public function createAuthenticatedToken(PassportInterface $passport, string $firewallName): TokenInterface
     {
-        // TODO: Implement createAuthenticatedToken() method.
+        if (!$passport instanceof UserPassportInterface) {
+            throw new \LogicException(sprintf(
+                'Invalid passport type, "%s" needs to implement %s',
+                \get_class($passport),
+                UserPassportInterface::class
+            ));
+        }
+
+        return new PostAuthenticationToken(
+            $passport->getUser(),
+            $firewallName,
+            $passport->getUser()->getRoles()
+        );
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
