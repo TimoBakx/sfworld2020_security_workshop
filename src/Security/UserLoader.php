@@ -6,6 +6,7 @@ namespace App\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 final class UserLoader
 {
@@ -19,8 +20,14 @@ final class UserLoader
         $this->repository = $repository;
     }
 
-    public function __invoke(string $email): ?User
+    public function __invoke(string $email): User
     {
-        return $this->repository->findOneBy(['email' => $email]);
+        $user = $this->repository->findOneBy(['email' => $email]);
+
+        if (!$user instanceof User) {
+            throw new BadCredentialsException();
+        }
+
+        return $user;
     }
 }
