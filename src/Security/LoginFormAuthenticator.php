@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
@@ -23,9 +25,15 @@ final class LoginFormAuthenticator implements AuthenticatorInterface
      */
     private $loader;
 
-    public function __construct(UserLoader $loader)
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    public function __construct(UserLoader $loader, RouterInterface $router)
     {
         $this->loader = $loader;
+        $this->router = $router;
     }
 
     public function supports(Request $request): ?bool
@@ -64,11 +72,11 @@ final class LoginFormAuthenticator implements AuthenticatorInterface
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // TODO: Implement onAuthenticationSuccess() method.
+        return new RedirectResponse($this->router->generate('app_homepage'));
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        // TODO: Implement onAuthenticationFailure() method.
+        return null;
     }
 }
