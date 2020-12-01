@@ -15,7 +15,8 @@ final class LoginFormAuthenticator implements AuthenticatorInterface
 {
     public function supports(Request $request): ?bool
     {
-        // TODO: Implement supports() method.
+        return $request->isMethod(Request::METHOD_POST)
+            && $request->attributes->get('_route') === 'app_login';
     }
 
     public function authenticate(Request $request): PassportInterface
