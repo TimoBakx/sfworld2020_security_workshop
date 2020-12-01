@@ -35,7 +35,11 @@ class ApiTokenFunctionalTest extends WebTestCase
         $data = json_decode($content, true);
         $this->assertEquals([
             'email' => $user->getEmail(),
-            'roles' => ['ROLE_USER'],
+            'roles' => [
+                'ROLE_USER',
+                'ROLE_SCOPE_PROFILE:READ',
+                'ROLE_SCOPE_PROFILE:WRITE',
+            ],
         ], $data);
     }
 

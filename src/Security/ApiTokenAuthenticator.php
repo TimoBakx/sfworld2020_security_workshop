@@ -21,11 +21,11 @@ final class ApiTokenAuthenticator implements AuthenticatorInterface
     const HEADER = 'X-TOKEN';
 
     /**
-     * @var ApiTokenUserLoader
+     * @var ApiTokenLoader
      */
     private $loader;
 
-    public function __construct(ApiTokenUserLoader $loader)
+    public function __construct(ApiTokenLoader $loader)
     {
         $this->loader = $loader;
     }
@@ -39,8 +39,11 @@ final class ApiTokenAuthenticator implements AuthenticatorInterface
     {
         $token = $request->headers->get(self::HEADER);
 
+        $tokenBadge = new ApiTokenBadge($token, $this->loader);
+
         return new SelfValidatingPassport(
-            new UserBadge($token, $this->loader)
+            $tokenBadge->toUserBadge(),
+            [$tokenBadge]
         );
     }
 
@@ -54,17 +57,23 @@ final class ApiTokenAuthenticator implements AuthenticatorInterface
             ));
         }
 
+        $roles = $passport->getUser()->getRoles();
+        $apiTokenBadge = $passport->getBadge(ApiTokenBadge::class);
+
+        if ($apiTokenBadge instanceof ApiTokenBadge) {
+            $roles = \array_merge($roles, $apiTokenBadge->getScopeRoles());
+        }
+
         return new PostAuthenticationToken(
             $passport->getUser(),
             $firewallName,
-            $passport->getUser()->getRoles()
+            $roles
         );
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         return null;
-        return new JsonResponse(['email' => $token->getUsername(), 'roles' => $token->getRoleNames()]);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response

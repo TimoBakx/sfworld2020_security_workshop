@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Security;
 
 use App\Entity\ApiToken;
-use App\Entity\User;
 use App\Repository\ApiTokenRepository;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
-final class ApiTokenUserLoader
+final class ApiTokenLoader
 {
     /**
      * @var ApiTokenRepository
@@ -21,7 +20,7 @@ final class ApiTokenUserLoader
         $this->repository = $repository;
     }
 
-    public function __invoke(string $apiToken): User
+    public function __invoke(string $apiToken): ApiToken
     {
         $token = $this->repository->findOneBy(['token' => $apiToken]);
 
@@ -29,6 +28,6 @@ final class ApiTokenUserLoader
             throw new BadCredentialsException();
         }
 
-        return $token->getUser();
+        return $token;
     }
 }
