@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -55,6 +56,7 @@ final class LoginFormAuthenticator implements AuthenticatorInterface
             new PasswordCredentials($password),
             [
                 new CsrfTokenBadge('authenticate', $csrfToken),
+                new RememberMeBadge(),
             ]
         );
     }
