@@ -20,9 +20,13 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\UserPassportInterface;
 use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
-final class LoginFormAuthenticator implements AuthenticatorInterface
+final class LoginFormAuthenticator implements AuthenticatorInterface, AuthenticationEntryPointInterface
 {
+    use TargetPathTrait;
+
     /**
      * @var UserLoader
      */
@@ -80,6 +84,11 @@ final class LoginFormAuthenticator implements AuthenticatorInterface
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
+        if ($targetPath) {
+            return new RedirectResponse($targetPath);
+        }
+
         return new RedirectResponse($this->router->generate('app_homepage'));
     }
 
@@ -87,6 +96,11 @@ final class LoginFormAuthenticator implements AuthenticatorInterface
     {
         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
 
+        return new RedirectResponse($this->router->generate('app_login'));
+    }
+
+    public function start(Request $request, AuthenticationException $authException = null)
+    {
         return new RedirectResponse($this->router->generate('app_login'));
     }
 }
